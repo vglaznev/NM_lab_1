@@ -2,7 +2,7 @@
 
 SystemOfLinearEquations::SystemOfLinearEquations() {
 
-	std::vector<double> arr_1{ -9, -6, -9, 0, -6, 7, -1, 5, 5 };
+	/*std::vector<double> arr_1{ -9, -6, -9, 0, -6, 7, -1, 5, 5 };
 	upperDiagonal = arr_1;
 	std::vector<double> arr_2{ -2, 9,-9,-5,-1,-4,-9, -5, 2,-5 };
 	diagonal = arr_2;
@@ -17,7 +17,7 @@ SystemOfLinearEquations::SystemOfLinearEquations() {
 	freeColumn = arr_6;
 
 	sizeOfSystem = 10;
-	posOfFirstRow = 2;
+	posOfFirstRow = 2;*/
 }
 
 
@@ -25,7 +25,7 @@ void SystemOfLinearEquations::inputFromFile() {
 
 }
 void SystemOfLinearEquations::outputToStream(std::ostream& outStream, const bool& formatFlag) {
-	outStream << std::setprecision(4);
+	outStream << std::setprecision(3);
 	for (int i = 0; i < sizeOfSystem; i++) {
 		for (int j = 0; j < sizeOfSystem; j++)
 		{
@@ -43,7 +43,7 @@ void SystemOfLinearEquations::outputToStream(std::ostream& outStream, const bool
 			}
 		}
 		if (formatFlag) {
-			outStream << "||\t" << freeColumn[i];
+			outStream << /*"||\t"*/ "\t" << freeColumn[i];
 		}
 		outStream << '\n';
 	}
@@ -54,6 +54,7 @@ void SystemOfLinearEquations::outputToStream(std::ostream& outStream, const bool
 			outStream << freeColumn[i] << '\n';
 		}
 	}
+	outStream << '\n';
 }
 
 void SystemOfLinearEquations::outputToFile(const std::string& path) {
@@ -72,6 +73,69 @@ void SystemOfLinearEquations::outputToConsole() {
 	outputToStream(std::cout, true);
 }
 
+std::vector<int> SystemOfLinearEquations::generate(const int& expOfSysSize, const int& expOfElems) {
+	Random newRandom;
+	newRandom.randomize();
+
+	std::vector<int> solutionVector;
+
+	sizeOfSystem = newRandom.randomIntOfOrderOfMagnitude(expOfSysSize);
+	posOfFirstRow = newRandom.randomInt(0, sizeOfSystem - 2);
+
+	for (int i = 0; i < sizeOfSystem; i++) {
+		upperDiagonal.push_back(newRandom.randomDouble(expOfElems));
+		diagonal.push_back(newRandom.randomDouble(expOfElems));
+		lowerDiagonal.push_back(newRandom.randomDouble(expOfElems));
+
+		firstRow.push_back(newRandom.randomDouble(expOfElems));
+		secondRow.push_back(newRandom.randomDouble(expOfElems));
+
+		solutionVector.push_back(newRandom.randomInt(expOfElems));
+	}
+
+	lowerDiagonal.pop_back();
+	upperDiagonal.pop_back();
+
+	//Fix overlaps
+
+	diagonal[posOfFirstRow] = firstRow[sizeOfSystem - posOfFirstRow - 1];
+	diagonal[posOfFirstRow + 1] = secondRow[sizeOfSystem - posOfFirstRow - 2];
+
+	if (posOfFirstRow != 0) lowerDiagonal[posOfFirstRow - 1] = firstRow[sizeOfSystem - posOfFirstRow];
+	lowerDiagonal[posOfFirstRow] = secondRow[sizeOfSystem - posOfFirstRow - 1];
+
+	if (posOfFirstRow != sizeOfSystem - 2) upperDiagonal[posOfFirstRow + 1] = secondRow[sizeOfSystem - posOfFirstRow - 3];
+	upperDiagonal[posOfFirstRow] = firstRow[sizeOfSystem - posOfFirstRow - 2];
+
+	for (int i = 0; i < sizeOfSystem; i++) {
+		double result = 0;
+
+		if (i != posOfFirstRow && i != posOfFirstRow + 1) {
+			result += diagonal[i] * solutionVector[(sizeOfSystem - 1) - i];
+			if (i != 0) {
+				result += lowerDiagonal[i - 1] * static_cast<double>(solutionVector[(sizeOfSystem - 1) - i + 1]);
+			}
+			if (i != sizeOfSystem - 1) {
+				result += upperDiagonal[i] * static_cast<double>(solutionVector[(sizeOfSystem - 1) - i - 1]);
+			}
+		}
+		else if (i == posOfFirstRow)
+		{
+			for (int j = 0; j < sizeOfSystem; j++) {
+				result += static_cast<double>(solutionVector[j]) * firstRow[j];
+			}
+		}
+		else {
+			for (int j = 0; j < sizeOfSystem; j++) {
+				result += static_cast<double>(solutionVector[j]) * secondRow[j];
+			}
+		}
+
+		freeColumn.push_back(result);
+		result = 0;
+	}
+	return solutionVector;
+}
 std::vector<double> SystemOfLinearEquations::solve() {
 	double R;
 
@@ -100,6 +164,8 @@ std::vector<double> SystemOfLinearEquations::solve() {
 
 	}
 
+	/*outputToConsole();*/
+
 	//Step 2
 	for (int i = sizeOfSystem - 1; i > posOfFirstRow + 1; i--) {
 		R = 1 / diagonal[i];
@@ -126,12 +192,15 @@ std::vector<double> SystemOfLinearEquations::solve() {
 
 	}
 
+	/*outputToConsole();*/
+
 	//Step 3.1
 	R = 1 / secondRow[sizeOfSystem - posOfFirstRow - 2];
 	secondRow[sizeOfSystem - posOfFirstRow - 2] = 1;
 	secondRow[sizeOfSystem - posOfFirstRow - 1] *= R;
 	freeColumn[posOfFirstRow + 1] *= R;
 
+	
 
 	//Step 3.2
 	R = firstRow[sizeOfSystem - posOfFirstRow - 2];
@@ -144,6 +213,7 @@ std::vector<double> SystemOfLinearEquations::solve() {
 	freeColumn[posOfFirstRow] /= firstRow[sizeOfSystem - posOfFirstRow - 1];
 	firstRow[sizeOfSystem - posOfFirstRow - 1] = 1;
 
+	/*outputToConsole();*/
 
 	//Fix overlaps
 	upperDiagonal[posOfFirstRow] = 0;

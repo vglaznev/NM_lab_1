@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include "Random.h"
 
 class SystemOfLinearEquations
 {
@@ -21,9 +22,12 @@ class SystemOfLinearEquations
 	void outputToStream(std::ostream&,const bool&);
 public:
 	SystemOfLinearEquations();
+
 	void inputFromFile();
 	void outputToFile(const std::string&);
 	void outputToConsole();
+	
+	std::vector<int> generate(const int&, const int&);
 	std::vector<double> solve();
 };
 
