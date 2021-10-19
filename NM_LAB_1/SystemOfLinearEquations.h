@@ -1,5 +1,8 @@
 #pragma once
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 
 class SystemOfLinearEquations
 {
@@ -15,9 +18,12 @@ class SystemOfLinearEquations
 	int sizeOfSystem;
 	int posOfFirstRow;
 
+	void outputToStream(std::ostream&,const bool&);
 public:
 	SystemOfLinearEquations();
+	void inputFromFile();
+	void outputToFile(const std::string&);
+	void outputToConsole();
 	std::vector<double> solve();
-
 };
 

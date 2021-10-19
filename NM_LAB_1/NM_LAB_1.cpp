@@ -10,4 +10,7 @@ int main()
 	for (double it : result) {
 		std::cout << it << '\t';
 	}
+	std::cout << '\n';
+	default_example.outputToConsole();
+	default_example.outputToFile("D:\\test.txt");
 }

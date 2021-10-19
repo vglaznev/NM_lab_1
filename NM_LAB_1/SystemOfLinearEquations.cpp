@@ -20,6 +20,58 @@ SystemOfLinearEquations::SystemOfLinearEquations() {
 	posOfFirstRow = 2;
 }
 
+
+void SystemOfLinearEquations::inputFromFile() {
+
+}
+void SystemOfLinearEquations::outputToStream(std::ostream& outStream, const bool& formatFlag) {
+	outStream << std::setprecision(4);
+	for (int i = 0; i < sizeOfSystem; i++) {
+		for (int j = 0; j < sizeOfSystem; j++)
+		{
+			if (i != posOfFirstRow && i != posOfFirstRow + 1) {
+				if (j + i == sizeOfSystem - 2) outStream << upperDiagonal[i] << '\t';
+				else if (j + i == sizeOfSystem - 1) outStream << diagonal[i] << '\t';
+				else if (j + i == sizeOfSystem) outStream << lowerDiagonal[i - 1] << '\t';
+				else outStream << 0 << '\t';
+			}
+			else if (i == posOfFirstRow) {
+				outStream << firstRow[j] << '\t';
+			}
+			else {
+				outStream << secondRow[j] << '\t';
+			}
+		}
+		if (formatFlag) {
+			outStream << "||\t" << freeColumn[i];
+		}
+		outStream << '\n';
+	}
+
+	if (!formatFlag) {
+		outStream << '\n';
+		for (int i = 0; i < sizeOfSystem; i++) {
+			outStream << freeColumn[i] << '\n';
+		}
+	}
+}
+
+void SystemOfLinearEquations::outputToFile(const std::string& path) {
+	std::ofstream outputFile;
+	outputFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	try {
+		outputFile.open(path);
+		outputToStream(outputFile, false);
+		outputFile.close();
+	}
+	catch (const std::ifstream::failure& fail) {
+		std::cerr << "Exception opening/reading/writing input file. \n ";
+	}
+}
+void SystemOfLinearEquations::outputToConsole() {
+	outputToStream(std::cout, true);
+}
+
 std::vector<double> SystemOfLinearEquations::solve() {
 	double R;
 
@@ -113,3 +165,6 @@ std::vector<double> SystemOfLinearEquations::solve() {
 
 	return solution;
 }
+
+
+
