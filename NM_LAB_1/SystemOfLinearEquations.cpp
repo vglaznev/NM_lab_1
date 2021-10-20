@@ -221,16 +221,34 @@ std::vector<double> SystemOfLinearEquations::solve() {
 	diagonal[posOfFirstRow + 1] = 1;
 	lowerDiagonal[posOfFirstRow] = secondRow[sizeOfSystem - posOfFirstRow - 1];
 
-	//Initialize solution vector
-	std::vector<double> solution(sizeOfSystem);
-	solution[posOfFirstRow] = freeColumn[posOfFirstRow];
+	outputToConsole();
 
-	//Step 4
-	for (int i = posOfFirstRow - 1; i >= 0; i--) {
-		solution[i] = freeColumn[i] - upperDiagonal[i] * solution[i + 1];
+	//Initialize solution vector
+
+	std::vector<double> solution(sizeOfSystem);
+
+	////Step 4
+	//solution[posOfFirstRow] = freeColumn[posOfFirstRow];
+
+	//for (int i = posOfFirstRow - 1; i >= 0; i--) {
+	//	solution[i] = freeColumn[i] - upperDiagonal[i] * solution[i + 1];
+	//}
+	//for (int i = posOfFirstRow + 1; i < sizeOfSystem; i++) {
+	//	solution[i] = freeColumn[i] - lowerDiagonal[i - 1] * solution[i - 1];
+	//}
+	//std::reverse(solution.begin(), solution.end());
+
+	//Step 4(another option)
+	int solIndex = sizeOfSystem - posOfFirstRow - 1;
+
+	solution[solIndex] = freeColumn[posOfFirstRow];
+
+	for (int i = posOfFirstRow - 1, j = solIndex + 1; i >= 0; i--, j++) {
+		solution[j] = freeColumn[i] - upperDiagonal[i] * solution[j - 1];
 	}
-	for (int i = posOfFirstRow + 1; i < sizeOfSystem; i++) {
-		solution[i] = freeColumn[i] - lowerDiagonal[i - 1] * solution[i - 1];
+
+	for (int i = posOfFirstRow + 1, j = solIndex - 1; i < sizeOfSystem; i++, j--) {
+		solution[j] = freeColumn[i] - lowerDiagonal[i - 1] * solution[j + 1];
 	}
 
 	return solution;

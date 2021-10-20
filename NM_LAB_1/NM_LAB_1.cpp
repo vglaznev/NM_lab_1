@@ -12,8 +12,13 @@ int main()
 	}*/
 	SystemOfLinearEquations default_example;
 	std::vector<int> solutionVector = default_example.generate(1,2);
-	/*default_example.outputToConsole();*/
+
+	default_example.outputToConsole();
+	std::cout << std::endl;
+
 	std::vector<double> realSolutionVector = default_example.solve();
+
+
 	std::cout << "\nSolution vector:\n";
 	for (int it : solutionVector) {
 		std::cout << it << '\t';
